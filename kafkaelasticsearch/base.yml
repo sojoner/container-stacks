@@ -1,0 +1,14 @@
+version: '2'
+services:
+  sojoner:
+    dns: ${CONSUL_INT_IP}
+    networks: 
+     - network
+    cpu_shares: 2
+    mem_limit: 1g
+    environment:
+     - DC_NAME=es
+     - RUN_SERVER=false
+     - BOOTSTRAP_CONSUL=false
+     - DNS_RECURSOR=10.8.8.8
+     - CONSUL_CLUSTER_IPS=${CONSUL_INT_IP}

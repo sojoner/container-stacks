@@ -1,0 +1,44 @@
+version: '2'
+services:
+  elasticsearch-1:
+    image: elasticsearch:1
+    hostname: elasticsearch-1
+    container_name: elasticsearch-1
+    command: "elasticsearch -Des.cluster.name=docker-es-1 -Dnetwork.bind_host=0.0.0.0"
+    restart: unless-stopped
+    network_mode: "host"
+    environment:
+    - ES_HEAP_SIZE=2g
+    ports:
+    - "9200:9200"
+    - "9300:9300"
+  
+  elasticsearch-2:
+    image: elasticsearch:2
+    hostname: elasticsearch-2
+    container_name: elasticsearch-2
+    command: "elasticsearch -Des.cluster.name=docker-es-2 -Dnetwork.bind_host=0.0.0.0"
+    restart: unless-stopped
+    network_mode: "host"
+    environment:
+    - ES_HEAP_SIZE=2g
+    ports:
+    - "9200:9200"
+    - "9300:9300"
+    
+  elasticsearch-5:
+    image: elasticsearch:5
+    hostname: elasticsearch-5
+    container_name: elasticsearch-5
+    command: "elasticsearch -Des.cluster.name=docker-es-2 -Dnetwork.bind_host=0.0.0.0"
+    restart: unless-stopped
+    network_mode: "host"
+    environment:
+    - ES_HEAP_SIZE=2g
+    ports:
+    - "9200:9200"
+    - "9300:9300"
+
+networks:
+  network:
+    driver: overlay

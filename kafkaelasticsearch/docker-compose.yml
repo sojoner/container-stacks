@@ -1,0 +1,72 @@
+version: '2'
+services:
+  consul:
+    image: qnib/alpn-consul
+    hostname: consul
+    container_name: consul
+    restart: unless-stopped
+    networks:
+     - network
+    cpu_shares: 4
+    mem_limit: 1g
+    environment:
+     - DC_NAME=es
+     - RUN_SERVER=true
+     - BOOTSTRAP_CONSUL=true
+     - DNS_RECURSOR=8.8.8.8
+    ports:
+    - "8500:8500"
+
+  zookeeper:
+    image: qnib/zookeeper
+    hostname: zookeeper
+    container_name: zookeeper
+    restart: unless-stopped
+    extends:
+      file: base.yml
+      service: sojoner
+    ports:
+    - "2181:2181"
+
+  kafka-broker:
+    image: qnib/kafka:0.10.0.1
+    restart: unless-stopped
+    hostname: kafka-broker
+    container_name: kafka-broker
+    extends:
+      file: base.yml
+      service: sojoner
+    volumes:
+     - /tmp/kafka-logs     
+    ports:
+     - "9092:9092"
+
+  kafka-manager:
+    image: qnib/kafka-manager
+    hostname: kafka-manager
+    container_name: kafka-manager
+    restart: unless-stopped
+    extends:
+      file: base.yml
+      service: sojoner
+    environment:
+    - APPLICATION_SECRET=letmein
+    ports:
+    - "9000:9000"
+  
+  elasticsearch:
+    image: elasticsearch:1.7
+    hostname: elasticsearch
+    container_name: elasticsearch
+    command: "elasticsearch -Des.cluster.name=my-es"
+    restart: unless-stopped
+    extends:
+      file: base.yml
+      service: sojoner
+    ports:
+    - "9200:9200"
+    - "9300:9300"
+
+networks:
+  network:
+    driver: bridge
