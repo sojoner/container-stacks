@@ -53,3 +53,16 @@ You should see somthing like.
     "tagline": "You Know, for Search"
     }
 
+## Stream processors
+
+### the cutter
+
+
+## Produce test messages
+    
+    $ docker exec -t -i kafka-broker bin/bash
+    $ cd /opt/kafka/bin/ 
+    $ ./kafka-console-producer.sh --broker-list localhost:9092 --topic logs-replay
+
+
+
