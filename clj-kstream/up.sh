@@ -13,7 +13,7 @@ fi
 echo "export CONSUL_INT_IP=${CONSUL_INT_IP}" > env.sh
 source env.sh
 echo "start kafka elasticsearch stack"
-docker-compose up -d zookeeper kafka-broker kafka-manager elasticsearch
+docker-compose up -d zookeeper kafka-broker kafka-manager elasticsearch kibana
 sleep 5
 echo ">> Please 'source env.sh' to pick up the IP adress of the Consul node"
 
