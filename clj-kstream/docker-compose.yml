@@ -59,6 +59,19 @@ services:
     ports:
     - "9200:9200"
     - "9300:9300"
+  
+  kibana: 
+    image: kibana:4.1
+    hostname: kibana
+    container_name: kibana
+    environment:
+    - ELASTICSEARCH_URL=http://elasticsearch:9200
+    extends:
+      file: base.yml
+      service: sojoner
+    ports:
+    - "5601:5601"
+
   # Our small tools
   clj-kstream-cutter:
     image: sojoner/clj-kstream-cutter:0.2.0
@@ -79,7 +92,7 @@ services:
     command: "--broker kafka-broker:9092 --zookeeper zookeeper:2181 --input-topic mapped-test-json --output-topic heavy-hitters --name stream-hh"  
 
   clj-kstream-string-long-window-aggregate:
-    image: sojoner/clj-kstream-string-long-window-aggregate:0.2.0
+    image: sojoner/clj-kstream-string-long-window-aggregate:0.2.1
     hostname: clj-kstream-string-long-window-aggregate
     container_name: clj-kstream-string-long-window-aggregate
     extends:
