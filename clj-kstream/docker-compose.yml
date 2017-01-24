@@ -108,6 +108,17 @@ services:
       file: base.yml
       service: sojoner
     command: "--broker kafka-broker:9092 --topic agg-result --elasticsearch http://elasticsearch:9200 --index 2017-hpc-test --index-type hpc-test"
+
+  # For ever publishing text messages kafka producer for testing
+  clj-kstream-lf-producer:
+    image: sojoner/clj-kstream-lf-producer:0.1.0
+    hostname: clj-kstream-lf-producer
+    container_name: clj-kstream-lf-producer
+    extends:
+      file: base.yml
+      service: sojoner
+    command: "--broker kafka-broker:9092 --topic logs-replay"
+
 # a network for our stack
 networks:
   network:
