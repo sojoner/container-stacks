@@ -5,6 +5,7 @@ This will start a consul,  kafka, elasticsearch stack for toying around.
 ## Starting 
 
     $ ./up.sh
+    $ source env.sh
     $ compose ps
 
 Goto the consul UI in your browser to see if everything has started.
@@ -54,15 +55,11 @@ You should see somthing like.
     }
 
 ## Stream processors
-
-### the cutter
-
-
-## Produce test messages
     
-    $ docker exec -t -i kafka-broker bin/bash
-    $ cd /opt/kafka/bin/ 
-    $ ./kafka-console-producer.sh --broker-list localhost:9092 --topic logs-replay
+    ./up-k-streams.sh.
 
+    $docker-compose kill clj-kstream-lf-producer clj-kstream-cutter clj-kstream-hh clj-kstream-string-long-window-aggregate clj-kstream-elasticsearch-sink
+    
+    $docker-compose rm -f clj-kstream-lf-producer clj-kstream-cutter clj-kstream-hh clj-kstream-string-long-window-aggregate clj-kstream-elasticsearch-sink
 
 
