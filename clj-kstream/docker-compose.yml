@@ -89,7 +89,7 @@ services:
     extends:
       file: base.yml
       service: sojoner
-    command: "--broker kafka-broker:9092 --zookeeper zookeeper:2181 --input-topic mapped-test-json --output-topic heavy-hitters  --window-size 1 --name stream-hh"  
+    command: "--broker kafka-broker:9092 --input-topic mapped-test-json --output-topic heavy-hitters  --window-size 1 --name stream-hh"  
 
   clj-kstream-string-long-window-aggregate:
     image: sojoner/clj-kstream-string-long-window-aggregate:0.2.2
@@ -98,7 +98,7 @@ services:
     extends:
       file: base.yml
       service: sojoner
-    command: "--broker kafka-broker:9092 --zookeeper zookeeper:2181 --input-topic heavy-hitters --window-size 1 --output-topic agg-result --name stream-agg"
+    command: "--broker kafka-broker:9092 --input-topic heavy-hitters --window-size 1 --output-topic agg-result --name stream-agg"
 
   clj-kstream-elasticsearch-sink:
     image: sojoner/clj-kstream-elasticsearch-sink:0.0.1
