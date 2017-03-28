@@ -47,30 +47,31 @@ services:
     - APPLICATION_SECRET=letmein
     ports:
     - "9000:9000"
+  
   # Our Data sink
   elasticsearch:
-    image: elasticsearch:1.7
-    hostname: elasticsearch
-    container_name: elasticsearch
-    command: "elasticsearch -Des.cluster.name=clj-kstream"
-    extends:
-      file: base.yml
-      service: sojoner
+    image: elasticsearch:5
+    hostname: elasticsearch5
+    container_name: elasticsearch5
+    networks:
+    - network
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    mem_limit: 1g    
+    environment:
+      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+      bootstrap.memory_lock: "true"
+      cluster.name: "clj-kstream-es-docker-cluster"
+      http.host: "10.128.65.140"
+      transport.host: "10.128.65.140"
     ports:
     - "9200:9200"
     - "9300:9300"
-  
-  kibana: 
-    image: kibana:4.1
-    hostname: kibana
-    container_name: kibana
-    environment:
-    - ELASTICSEARCH_URL=http://elasticsearch:9200
-    extends:
-      file: base.yml
-      service: sojoner
-    ports:
-    - "5601:5601"
 
   # Our small tools
   clj-kstream-cutter:

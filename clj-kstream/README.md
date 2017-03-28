@@ -4,7 +4,7 @@ This will start a consul,  kafka, elasticsearch stack for toying around.
 
 ## Starting 
 
-    $ ./up.sh
+    $ ./start-backends.sh
     $ source env.sh
     $ compose ps
 
@@ -56,7 +56,7 @@ You should see somthing like.
 
 ## Stream processors
     
-    ./up-k-streams.sh.
+    ./start-kstreams.sh
 
     $docker-compose kill clj-kstream-lf-producer clj-kstream-cutter clj-kstream-hh clj-kstream-string-long-window-aggregate clj-kstream-elasticsearch-sink
     
