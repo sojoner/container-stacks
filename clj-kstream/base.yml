@@ -11,3 +11,4 @@ services:
      - BOOTSTRAP_CONSUL=false
      - DNS_RECURSOR=8.8.8.8
      - CONSUL_CLUSTER_IPS=${CONSUL_INT_IP}
+

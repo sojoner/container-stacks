@@ -9,7 +9,7 @@ docker-compose up -d clj-kstream-cutter
 sleep 2
 
 echo "start clj-kstream-hh"
-#docker-compose up -d clj-kstream-hh
+docker-compose up -d clj-kstream-hh
 sleep 2
 
 echo "start clj-kstream-string-long-window-aggregate"

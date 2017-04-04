@@ -47,30 +47,66 @@ services:
     - APPLICATION_SECRET=letmein
     ports:
     - "9000:9000"
-  # Our Data sink
-  elasticsearch:
-    image: elasticsearch:1.7
-    hostname: elasticsearch
-    container_name: elasticsearch
-    command: "elasticsearch -Des.cluster.name=clj-kstream"
-    extends:
-      file: base.yml
-      service: sojoner
-    ports:
-    - "9200:9200"
-    - "9300:9300"
   
-  kibana: 
-    image: kibana:4.1
-    hostname: kibana
+  # Our Data sink
+  elasticsearch1:
+    image: docker.elastic.co/elasticsearch/elasticsearch:5.3.0
+    container_name: elasticsearch1
+    environment:
+      - xpack.security.enabled=false
+      - cluster.name=clj-kstream-es-docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    mem_limit: 1g
+    cap_add:
+      - IPC_LOCK
+    volumes:
+      - esdata1:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+    networks:
+      - network
+
+  elasticsearch2:
+    image: docker.elastic.co/elasticsearch/elasticsearch:5.3.0
+    container_name: elasticsearch2
+    environment:
+      - xpack.security.enabled=false
+      - cluster.name=clj-kstream-es-docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "discovery.zen.ping.unicast.hosts=elasticsearch1"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    mem_limit: 1g
+    cap_add:
+      - IPC_LOCK
+    volumes:
+      - esdata2:/usr/share/elasticsearch/data
+    networks:
+      - network
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:5.3.0
     container_name: kibana
     environment:
-    - ELASTICSEARCH_URL=http://elasticsearch:9200
-    extends:
-      file: base.yml
-      service: sojoner
+      ELASTICSEARCH_URL: http://elasticsearch1:9200
     ports:
-    - "5601:5601"
+      - 5601:5601
+    networks:
+      - network
 
   # Our small tools
   clj-kstream-cutter:
@@ -102,12 +138,12 @@ services:
 
   clj-kstream-elasticsearch-sink:
     image: sojoner/clj-kstream-elasticsearch-sink:0.0.1
-    hostname: elasticsearch-sink
-    container_name: elasticsearch-sink
+    hostname: clj-elasticsearch-sink
+    container_name: clj-elasticsearch-sink
     extends:
       file: base.yml
       service: sojoner
-    command: "--broker kafka-broker:9092 --topic agg-result --elasticsearch http://elasticsearch:9200 --index 2017-hpc-test --index-type hpc-test"
+    command: "--broker kafka-broker:9092 --topic agg-result --elasticsearch http://elasticsearch1:9200 --index heavy-hitters-test-idx --index-type hh-struct"
 
   # For ever publishing text messages kafka producer for testing
   clj-kstream-lf-producer:
@@ -118,6 +154,13 @@ services:
       file: base.yml
       service: sojoner
     command: "--broker kafka-broker:9092 --topic logs-replay"
+
+# Have Bind Mounts on the docker engine
+volumes:
+  esdata1:
+    driver: local
+  esdata2:
+    driver: local
 
 # a network for our stack
 networks:

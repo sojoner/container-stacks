@@ -2,17 +2,17 @@
 
 This will start a consul,  kafka, elasticsearch stack for toying around.
 
-## Starting 
+## Starting the Kafka Zookeeper Elasticsearch Stack
 
-    $ ./up.sh
+    $ ./backends-start.sh
     $ source env.sh
-    $ compose ps
+    $ docker-compose ps
 
 Goto the consul UI in your browser to see if everything has started.
 
 ## Working with the up.sh script
 
-In oder to work with docker network overlays anc service descovery, we have this __up.sh__ script. It will
+In oder to work with docker network overlays and service discovery, we have this __start-backends.sh__ script. It will
 
 * start consul with the __docker-compose__ command
 * get the __IP__ for the __consul__ service
@@ -54,12 +54,28 @@ You should see somthing like.
     "tagline": "You Know, for Search"
     }
 
-## Stream processors
-    
-    ./up-k-streams.sh.
 
-    $docker-compose kill clj-kstream-lf-producer clj-kstream-cutter clj-kstream-hh clj-kstream-string-long-window-aggregate clj-kstream-elasticsearch-sink
-    
-    $docker-compose rm -f clj-kstream-lf-producer clj-kstream-cutter clj-kstream-hh clj-kstream-string-long-window-aggregate clj-kstream-elasticsearch-sink
+### Visit Kibana
 
+    http://<YOUR_DOCKER_HOST>:5601
+
+## Start Stream processors    
+    ./kstreams-stop.sh
+
+### Check the logs 
+
+    $docker logs <CONTAINER_NAME>
+
+
+## Stop and remove the containers
+
+    $./backends-stop.sh
+    $./kstreams-stop.sh
+
+## Clean Your Images
+
+    $ docker images
+    $ docker rmi <IMAGE-HASH>
+
+© Sojoner 2017
 
