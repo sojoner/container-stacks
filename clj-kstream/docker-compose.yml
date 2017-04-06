@@ -67,8 +67,6 @@ services:
       ES_JAVA_OPTS: "-Xms512m -Xmx512m"
       bootstrap.memory_lock: "true"
       cluster.name: "clj-kstream-es-docker-cluster"
-      http.host: "10.128.65.140"
-      transport.host: "10.128.65.140"
     ports:
     - "9200:9200"
     - "9300:9300"
