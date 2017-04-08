@@ -1,0 +1,56 @@
+version: '2'
+services:
+  elasticsearch-5:
+    image: docker.elastic.co/elasticsearch/elasticsearch:5.3.0
+    hostname: elasticsearch5
+    container_name: elasticsearch5
+    environment:
+      - xpack.security.enabled=false
+      - cluster.name=docker-es-5
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms8g -Xmx8g"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    cap_add:
+      - IPC_LOCK
+    volumes:
+      - esdata1:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+    networks:
+      - wiki2es
+    #restart: unless-stopped
+
+  kibana-5:
+    image: docker.elastic.co/kibana/kibana:5.3.0
+    container_name: kibana5
+    environment:
+      ELASTICSEARCH_URL: http://elasticsearch5:9200
+    ports:
+      - 5601:5601
+    networks:
+      - wiki2es
+    #restart: unless-stopped
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    volumes:
+    - /docker-data/redis:/var/lib/redis
+    networks:
+      - wiki2es
+    #restart: unless-stopped
+
+# Have Bind Mounts on the docker engine
+volumes:
+  esdata1:
+    driver: local
+networks:
+  wiki2es:
+    driver: bridge
