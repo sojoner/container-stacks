@@ -1,5 +1,7 @@
 version: '2'
 services:
+  # On the docker host do 
+  # sysctl -w vm.max_map_count=262144
   elasticsearch-5:
     image: docker.elastic.co/elasticsearch/elasticsearch:5.3.0
     hostname: elasticsearch5
@@ -39,6 +41,8 @@ services:
 
   redis:
     image: redis:alpine
+    hostname: wiki2es_redis_1
+    container_name: wiki2es_redis_1
     ports:
       - "6379:6379"
     volumes:
