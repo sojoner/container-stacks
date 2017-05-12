@@ -59,6 +59,7 @@ services:
         condition: on-failure
     environment:
       KAFKA_BROKER_ID: '{{.Task.Slot}}'
+      KAFKA_ID_OFFSET: "-1"
       ZK_SERVERS: "backend_zookeeper"
   
   kafkamanager:
