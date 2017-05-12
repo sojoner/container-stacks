@@ -1,0 +1,149 @@
+version: '3'
+services:
+  zookeeper:
+    image: qnib/plain-zookeeper
+    networks:
+     - backend_services
+    ports:
+      - "2181:2181"
+    deploy:
+      resources:
+        # Only one master for now
+        replicas: 1
+        limits:
+          cpus: '1'
+          memory: 512M
+      update_config:
+        parallelism: 1
+        delay: 15s
+      restart_policy:
+        condition: on-failure
+  
+  zkui:
+    image: qnib/plain-zkui
+    networks:
+     - backend_services
+    ports:
+      - "9090:9090"
+    environment:
+      ZK_SERVER: "backend_zookeeper"
+    deploy:
+      resources:
+        # Only one master for now
+        replicas: 1
+        limits:
+          cpus: '1'
+          memory: 512M
+      update_config:
+        parallelism: 1
+        delay: 15s
+      restart_policy:
+        condition: on-failure
+  
+  broker:
+    image: qnib/plain-kafka:0.10.0.1
+    networks:
+     - backend_services
+    ports:
+      - "9092:9092"
+    deploy:
+      replicas: 5
+      resources:
+        limits:
+          cpus: '1'
+          memory: 768M
+      update_config:
+        parallelism: 1
+        delay: 15s
+      restart_policy:
+        condition: on-failure
+    environment:
+      KAFKA_BROKER_ID: '{{.Task.Slot}}'
+      ZK_SERVERS: "backend_zookeeper"
+  
+  kafkamanager:
+    image: qnib/plain-kafka-manager
+    networks:
+     - backend_services    
+    ports:
+      - "9001:9000"
+    environment:
+      ZK_SERVER: "backend_zookeeper:2181"
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+      restart_policy:
+        condition: on-failure
+
+  esmaster:
+    image: qnib/plain-elasticsearch
+    networks:
+     - backend_services
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    deploy:
+      # Only one master for now
+      replicas: 1
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+      update_config:
+        parallelism: 1
+        delay: 15s
+      restart_policy:
+        condition: on-failure
+    environment:
+      ES_HEAP_MAX: "256m"
+      ES_HEAP_MIN: "256m"
+      ES_NODE_MASTER: "true"
+      ES_NODE_DATA: "false"
+  
+  esdata:
+    image: qnib/plain-elasticsearch
+    networks:
+     - backend_services
+    deploy:
+      replicas: 3
+      resources:
+        limits:
+          cpus: '4'
+          memory: 1024M
+      update_config:
+        parallelism: 1
+        delay: 30s
+      restart_policy:
+        condition: on-failure
+    environment:
+      ES_HEAP_MAX: "1g"
+      ES_HEAP_MIN: "1g"
+      ES_NODE_MASTER: "false"
+      ES_NODE_DATA: "true"
+      ES_UNICAST_HOSTS: "backend_esmaster"
+
+  kibana: 
+    image: qnib/plain-kibana5
+    ports:
+      - "5601:5601"
+    networks:
+     - backend_services
+    deploy:
+      replicas: 1
+      resources:      
+        limits:
+          cpus: '1'
+          memory: 512M
+      update_config:
+        parallelism: 1
+        delay: 15s
+    environment:
+      ES_MASTER_HOST: backend_esmaster
+
+# a network for our stack
+networks:
+  backend_services:
+    external: true

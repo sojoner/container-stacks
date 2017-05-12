@@ -1,0 +1,96 @@
+version: '3'
+services:
+  clj-kstream-lf-producer:
+    image: sojoner/clj-kstream-lf-producer:0.1.0
+    hostname: clj-kstream-lf-producer
+    networks:
+      - backend_services
+    command: "--broker backend_broker:9092 --topic logs-replay"
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+      update_config:
+        parallelism: 1
+        delay: 15s
+      restart_policy:
+        condition: on-failure
+
+  clj-kstream-cutter:
+    image: sojoner/clj-kstream-cutter:0.2.0
+    hostname: clj-kstream-cutter
+    networks:
+     - backend_services
+    command: "--broker backend_broker:9092 --input-topic logs-replay --output-topic mapped-test-json --selector msg --name stream-cut-json-field"  
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+      update_config:
+        parallelism: 1
+        delay: 15s
+      restart_policy:
+        condition: on-failure
+
+  clj-kstream-hh:
+    image: sojoner/clj-kstream-hh:0.1.0
+    hostname: clj-kstream-hh
+    networks:
+     - backend_services
+    command: "--broker backend_broker:9092 --input-topic mapped-test-json --output-topic heavy-hitters  --window-size 1 --name stream-hh"  
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+      update_config:
+        parallelism: 1
+        delay: 15s
+      restart_policy:
+        condition: on-failure
+
+  clj-kstream-string-long-window-aggregate:
+    image: sojoner/clj-kstream-string-long-window-aggregate:0.2.2
+    hostname: clj-kstream-string-long-window-aggregate
+    networks:
+     - backend_services
+    command: "--broker backend_broker:9092 --input-topic heavy-hitters --window-size 1 --output-topic agg-result --name stream-agg"
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+      update_config:
+        parallelism: 1
+        delay: 15s
+      restart_policy:
+        condition: on-failure
+
+  clj-kstream-elasticsearch-sink:
+    image: sojoner/clj-kstream-elasticsearch-sink:0.0.1
+    hostname: clj-elasticsearch-sink
+    networks:
+     - backend_services
+    command: "--broker backend_broker:9092 --topic agg-result --elasticsearch http://backend_esmaster:9200 --index heavy-hitters-test-idx --index-type hh-struct"
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+      update_config:
+        parallelism: 1
+        delay: 15s
+      restart_policy:
+        condition: on-failure
+
+# a network for our stack
+networks:
+  backend_services:
+    external: true
