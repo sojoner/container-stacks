@@ -60,6 +60,7 @@ services:
     environment:
       KAFKA_BROKER_ID: '{{.Task.Slot}}'
       ZK_SERVERS: "backend_zookeeper"
+      broker.id=0
   
   kafkamanager:
     image: qnib/plain-kafka-manager
