@@ -5,7 +5,7 @@ echo "Start consul"
 docker-compose up -d consul
 
 ## Get IP
-CONSUL_INT_IP=$(docker inspect -f '{{ .NetworkSettings.Networks.cljkstream_network.IPAddress }}' consul)
+CONSUL_INT_IP=$(docker inspect -f '{{ .NetworkSettings.Networks.cljkstreamdesktop_network.IPAddress }}' consul)
 
 if [ ! -z "${CONSUL_IP}" ]; then
 	sed -i '' -e "s/dns: .*/dns: ${CONSUL_IP}/" base.yml
