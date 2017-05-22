@@ -40,13 +40,21 @@ __Start__
 
 	$docker run -t --rm -i --name clj-kstream-lf-producer --network backend_services sojoner/clj-kstream-lf-producer:0.1.0 --broker backend_broker:9092 --topic logs-replay
 
-	$docker run -t --rm -i --name clj-kstream-cutter --network backend_services sojoner/clj-kstream-cutter:0.2.0 --broker backend_broker:9092 --zookeeper backend_zookeeper:2181 --input-topic logs-replay --output-topic mapped-test-json --selector msg --name stream-cut-json-field
+	$docker run -t --rm -i --name clj-kstream-cutter --network backend_services sojoner/clj-kstream-cutter:0.2.1 --broker backend_broker:9092 --input-topic logs-replay --output-topic mapped-test-json --selector msg --name stream-cut-json-field
 	
 	$docker run -t --rm -i --name clj-kstream-hh --network backend_services sojoner/clj-kstream-hh:0.1.0 --broker backend_broker:9092 --input-topic mapped-test-json --output-topic heavy-hitters  --window-size 1 --name stream-hh
 
-	$docker run -t --rm -i --name clj-kstream-hh --network backend_services sojoner/clj-kstream-string-long-window-aggregate:0.2.2 --broker backend_broker:9092 --input-topic heavy-hitters --window-size 1 --output-topic agg-result --name stream-agg
+	$docker run -t --rm -i --name clj-kstream-string-long-window-aggregate --network backend_services sojoner/clj-kstream-string-long-window-aggregate:0.2.2 --broker backend_broker:9092 --input-topic heavy-hitters --window-size 1 --output-topic agg-result --name stream-agg
 
-	$docker run -t --rm -i --name clj-kstream-hh --network backend_services sojoner/clj-kstream-elasticsearch-sink:0.0.1 --broker backend_broker:9092 --topic agg-result --elasticsearch http://backend_esmaster:9200 --index heavy-hitters-test-idx --index-type hh-struct
+	$docker run -t --rm -i --name clj-kstream-elasticsearch-sink --network backend_services sojoner/clj-kstream-elasticsearch-sink:0.0.1 --broker backend_broker:9092 --topic agg-result --elasticsearch http://backend_esmaster:9200 --index heavy-hitters-test-idx --index-type hh-struct
+
+__Remove__
+
+	$docker service rm kstream_clj-kstream-cutter kstream_clj-kstream-lf-producer kstream_clj-kstream-string-long-window-aggregate kstream_clj-kstream-elasticsearch-sink kstream_clj-kstream-hh
+
+## Issues
+
+* 
 
 
 	

@@ -19,7 +19,7 @@ services:
         condition: on-failure
 
   clj-kstream-cutter:
-    image: sojoner/clj-kstream-cutter:0.2.0
+    image: sojoner/clj-kstream-cutter:0.2.1
     hostname: clj-kstream-cutter
     networks:
      - backend_services
