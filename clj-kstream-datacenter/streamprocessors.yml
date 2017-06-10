@@ -53,9 +53,9 @@ services:
         delay: 15s
       restart_policy:
         condition: on-failure
-#docker run --rm -ti --network backend_services --broker backend_broker:9092 --zookeeper backend_zookeeper:2181 --input-topic heavy-hitters --window-size 1 --output-topic agg-result --name stream-agg
+
   clj-kstream-string-long-window-aggregate:
-    image: sojoner/clj-kstream-string-long-window-aggregate:0.2.2
+    image: sojoner/clj-kstream-string-long-window-aggregate:0.3.0
     hostname: clj-kstream-string-long-window-aggregate
     networks:
      - backend_services

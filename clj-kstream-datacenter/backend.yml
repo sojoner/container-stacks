@@ -47,7 +47,7 @@ services:
     ports:
       - "9092:9092"
     deploy:
-      replicas: 5
+      replicas: 1
       resources:
         limits:
           cpus: '1'
@@ -79,7 +79,7 @@ services:
         condition: on-failure
 
   esmaster:
-    image: qnib/plain-elasticsearch
+    image: qnib/plain-elasticsearch:5.4.0
     networks:
      - backend_services
     ports:
@@ -104,11 +104,11 @@ services:
       ES_NODE_DATA: "false"
   
   esdata:
-    image: qnib/plain-elasticsearch
+    image: qnib/plain-elasticsearch:5.4.0
     networks:
      - backend_services
     deploy:
-      replicas: 3
+      replicas: 1
       resources:
         limits:
           cpus: '4'
