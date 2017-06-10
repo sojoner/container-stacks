@@ -19,11 +19,11 @@ services:
         condition: on-failure
 
   clj-kstream-cutter:
-    image: sojoner/clj-kstream-cutter:0.2.1
+    image: sojoner/clj-kstream-cutter:0.3.0
     hostname: clj-kstream-cutter
     networks:
      - backend_services
-    command: "--broker backend_broker:9092 --input-topic logs-replay --output-topic mapped-test-json --selector msg --name stream-cut-json-field"  
+    command: "--broker backend_broker:9092 --zookeeper backend_zookeeper:2181 --input-topic logs-replay --output-topic mapped-test-json --selector msg --name stream-cut-json-field"  
     deploy:
       replicas: 1
       resources:
@@ -37,11 +37,11 @@ services:
         condition: on-failure
 
   clj-kstream-hh:
-    image: sojoner/clj-kstream-hh:0.1.0
+    image: sojoner/clj-kstream-hh:0.3.0
     hostname: clj-kstream-hh
     networks:
      - backend_services
-    command: "--broker backend_broker:9092 --input-topic mapped-test-json --output-topic heavy-hitters  --window-size 1 --name stream-hh"  
+    command: "--broker backend_broker:9092 --zookeeper backend_zookeeper:2181 --input-topic mapped-test-json --output-topic heavy-hitters  --window-size 1 --name stream-hh"  
     deploy:
       replicas: 1
       resources:
@@ -53,13 +53,13 @@ services:
         delay: 15s
       restart_policy:
         condition: on-failure
-
+#docker run --rm -ti --network backend_services --broker backend_broker:9092 --zookeeper backend_zookeeper:2181 --input-topic heavy-hitters --window-size 1 --output-topic agg-result --name stream-agg
   clj-kstream-string-long-window-aggregate:
     image: sojoner/clj-kstream-string-long-window-aggregate:0.2.2
     hostname: clj-kstream-string-long-window-aggregate
     networks:
      - backend_services
-    command: "--broker backend_broker:9092 --input-topic heavy-hitters --window-size 1 --output-topic agg-result --name stream-agg"
+    command: "--broker backend_broker:9092 --zookeeper backend_zookeeper:2181 --input-topic heavy-hitters --window-size 1 --output-topic agg-result --name stream-agg"
     deploy:
       replicas: 1
       resources:
@@ -73,11 +73,11 @@ services:
         condition: on-failure
 
   clj-kstream-elasticsearch-sink:
-    image: sojoner/clj-kstream-elasticsearch-sink:0.0.1
+    image: sojoner/clj-kstream-elasticsearch-sink:0.3.0
     hostname: clj-elasticsearch-sink
     networks:
      - backend_services
-    command: "--broker backend_broker:9092 --topic agg-result --elasticsearch http://backend_esmaster:9200 --index heavy-hitters-test-idx --index-type hh-struct"
+    command: "--broker backend_broker:9092 --zookeeper backend_zookeeper:2181 --topic agg-result --elasticsearch http://backend_esmaster:9200 --index heavy-hitters-test-idx --index-type hh-struct"
     deploy:
       replicas: 1
       resources:
